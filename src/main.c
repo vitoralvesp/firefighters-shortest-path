@@ -15,9 +15,9 @@ void build_mtrx(int mtrx[100][3], char buffer[100], int k) {
 
 int main() {
     
-    FILE *file_ptr = fopen("../../docs/input.txt", "r");
+    FILE *file_ptr = fopen("../docs/input.txt", "r");
     if (file_ptr == NULL) {
-        printf("\nERRO: Nao foi possivel abrir o arquivo em \"../../docs/input.txt\"\n\n");
+        printf("\nERRO: Nao foi possivel abrir o arquivo em \"../docs/input.txt\"\n\n");
         exit(1);
     } else {
 
