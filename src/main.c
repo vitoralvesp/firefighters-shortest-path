@@ -28,10 +28,14 @@ void build_table(int mtrx[MAX_LINES_INPUT][3], int table[MAX_CORNERS][MAX_CORNER
     }
    
 }
-int get_min_idx (int v[], int size){
-    int min = 0;
-    for(int i = 0; i < size; i++) 
-        if(v[i] < min) min = i;
+int get_min_idx (int v[],int used[], int size){
+    int min = 1;
+    for(int i = 2; i < size; i++){
+        if(v[i] < v[min] && !used[i]) {
+            min = i;
+        }
+    }
+   
     return min;
 }
 
@@ -39,33 +43,47 @@ int get_min_idx (int v[], int size){
 //TODO: Montar vetor de tempo
 //TODO: Adicionar parametro de vetor que mostre onde ocorre qual a esquina de origem
 //TODO: Criar rota
-void generate_roadtrip(int t[], int biggest_corner, int used[],int table[MAX_CORNERS][MAX_CORNERS]){
-    int count_used = 0,corner = 1, currTime;
+void generate_roadtrip(int t[], int or[],int r[], int corner_on_fire, int biggest_corner, int used[],int table[MAX_CORNERS][MAX_CORNERS]){
+    int count_used = 1,corner = 1, originCost, destCost, routeCost, origin = corner_on_fire;
 
      //Inicializando com infinitos, exceto a esquina inicial
     for(int i = 1; i < biggest_corner; i++) t[i] = INT_MAX;
 
     t[0] = 0;
-    used[0] = 1;        
-   
+    used[0] = 1;     
 
-    while(count_used != biggest_corner){ //equivalente: enquanto E nao estiver vazio 
-        used[corner-1] = 1;
+    while(count_used < biggest_corner){ //equivalente: enquanto E nao estiver vazio 
+        originCost = t[corner-1];
         for(int corner_idx = 0; corner_idx<biggest_corner; corner_idx++){
-            currTime = table[corner-1][corner_idx];
+            routeCost = table[corner-1][corner_idx];
+            destCost = t[corner_idx];
             /*Ignorar se:
                 -Nao houver caminho (currTime = 0)
                 -destino = origem (corner_idx = corner)
                 -Ja foi vistada
             */
-            if(currTime == 0 || corner_idx == corner - 1 || used[corner_idx] ) continue;
+            if(routeCost == 0 || corner_idx == corner - 1 || used[corner_idx] ) continue;
             
             //Se descobre um tempo melhor, substitui
-            if(t[corner_idx] > t[corner-1] + currTime) t[corner-1] = t[corner_idx] + currTime;
+            if(originCost + routeCost < destCost) {
+                t[corner_idx] = originCost + routeCost;
+                or[corner_idx] = corner;
+            }
         }
         //Mudando a esquina de referencia
-        corner = get_min_idx(t,biggest_corner) + 1;
+        // printf("Esquina atual: %d\n", corner);
+        // printf("Trocando esquina...\n");
+        corner = get_min_idx(t,used,biggest_corner) + 1;
+        // printf("Nova esquina: %d\n", corner);
         count_used++;
+        used[corner-1] = 1;
+    }
+
+    while(origin != 1){
+        int corner_idx = 0, r_idx = 0;
+        while(corner_idx < origin-1) corner_idx++; //Procurar esquina
+        r[biggest_corner - r_idx++] = or[corner_idx]; //adicionar a rota a sua origem
+        origin = or[corner_idx]+1; //trocar a esquina a procurar
     }
 
 
@@ -84,6 +102,8 @@ int main() {
         int mtrx[MAX_LINES_INPUT][3];
         int table[MAX_CORNERS][MAX_CORNERS];
         int t[MAX_CORNERS];
+        int or[MAX_CORNERS];
+        int r[MAX_CORNERS];
         char buffer[MAX_LINES_INPUT];
         int biggest_corner = 1;
         int corner_on_fire = 1;
@@ -136,10 +156,13 @@ int main() {
         }
 
         int *used = calloc(biggest_corner, sizeof(int)); // Inicializa com zeros
-        generate_roadtrip(t,biggest_corner,used,table);
+        generate_roadtrip(t,or,r,corner_on_fire,biggest_corner,used,table);
 
         printf("\nVetor de Tempo:\n");
         for(int i = 0; i < biggest_corner; i++) printf("t[%d] = [%d]\n", i, t[i]);
+
+        printf("\nVetor de Rota:\n");
+        for(int i = 0; i < biggest_corner; i++) printf("r[%d] = [%d]\n", i, r[i]);
 
     }
 
