@@ -14,7 +14,6 @@ void build_mtrx(int mtrx[MAX_LINES_INPUT][3], char buffer[MAX_LINES_INPUT], int 
             col++;
         }
     }
-    
 }
 
 //build_table(matriz,tabela,quantidade de linhas) -> monta uma tabela, 
@@ -39,12 +38,18 @@ int get_min_idx (int v[],int used[], int size){
     return min;
 }
 
+int check(int check_number, int path[], int path_size) {
+    for (int i = 0; i < path_size; i++)
+        if (path[i] == check_number) return 1;
+    return 0;
+}
+
 
 //TODO: Montar vetor de tempo
 //TODO: Adicionar parametro de vetor que mostre onde ocorre qual a esquina de origem
 //TODO: Criar rota
 void generate_roadtrip(int t[], int or[],int r[], int corner_on_fire, int biggest_corner, int used[],int table[MAX_CORNERS][MAX_CORNERS]){
-    int count_used = 1,corner = 1, originCost, destCost, routeCost, origin = corner_on_fire;
+    int count_used = 1,corner = 1, originCost, destCost, routeCost, origin = corner_on_fire, path_idx = 0;
 
      //Inicializando com infinitos, exceto a esquina inicial
     for(int i = 1; i < biggest_corner; i++) t[i] = INT_MAX;
@@ -62,29 +67,32 @@ void generate_roadtrip(int t[], int or[],int r[], int corner_on_fire, int bigges
                 -destino = origem (corner_idx = corner)
                 -Ja foi vistada
             */
+            if (!check(corner, r, biggest_corner)) {
+                r[path_idx] = corner;
+                path_idx++;
+            }
+            
             if(routeCost == 0 || corner_idx == corner - 1 || used[corner_idx] ) continue;
             
             //Se descobre um tempo melhor, substitui
             if(originCost + routeCost < destCost) {
                 t[corner_idx] = originCost + routeCost;
-                or[corner_idx] = corner;
             }
         }
         //Mudando a esquina de referencia
         // printf("Esquina atual: %d\n", corner);
         // printf("Trocando esquina...\n");
         corner = get_min_idx(t,used,biggest_corner) + 1;
-        // printf("Nova esquina: %d\n", corner);
         count_used++;
         used[corner-1] = 1;
     }
 
-    while(origin != 1){
-        int corner_idx = 0, r_idx = 0;
-        while(corner_idx < origin-1) corner_idx++; //Procurar esquina
-        r[biggest_corner - r_idx++] = or[corner_idx]; //adicionar a rota a sua origem
-        origin = or[corner_idx]+1; //trocar a esquina a procurar
-    }
+    // while(origin != 1){
+    //     int corner_idx = 0, r_idx = 0;
+    //     while(corner_idx < origin-1) corner_idx++; //Procurar esquina
+    //     r[biggest_corner - r_idx++] = or[corner_idx]; //adicionar a rota a sua origem
+    //     origin = or[corner_idx]+1; //trocar a esquina a procurar
+    // }
 
 
 }
@@ -93,7 +101,7 @@ void generate_roadtrip(int t[], int or[],int r[], int corner_on_fire, int bigges
 
 int main() {
     
-    FILE *file_ptr = fopen("../docs/input.txt", "r");
+    FILE *file_ptr = fopen("../../docs/input.txt", "r");
     if (file_ptr == NULL) {
         printf("\nERRO: Nao foi possivel abrir o arquivo em \"../docs/input.txt\"\n\n");
         exit(1);
@@ -133,7 +141,7 @@ int main() {
             }
         }
 
-        printf("mtrx:\n");
+        printf("Esquinas e Custos:\n");
         for (int i = 0; i < lines_idx; i++) {
             for (int j = 0; j < 3; j++)
                 printf("%d ", mtrx[i][j]);
@@ -147,8 +155,11 @@ int main() {
             }
         }
 
+        for (int i = 0; i < biggest_corner; i++)
+            r[i] = 0;
+
         build_table(mtrx,table,lines_idx);
-        printf("\ntable: \n");
+        printf("\nTabela:\n");
         for (int i = 0; i < biggest_corner; i++) {
             for (int j = 0; j < biggest_corner; j++)
                 printf("%d ", table[i][j]);
@@ -157,12 +168,14 @@ int main() {
 
         int *used = calloc(biggest_corner, sizeof(int)); // Inicializa com zeros
         generate_roadtrip(t,or,r,corner_on_fire,biggest_corner,used,table);
+        r[biggest_corner-1] = corner_on_fire;
+        printf("\nrota ate a esquina #%d: ", corner_on_fire);
+        for(int i = 0; i < biggest_corner-1; i++) {
+            printf("%d ", r[i]);
+        }
+        printf("%d\n", r[biggest_corner-1]);
+        printf("tempo calculado para a rota: %d min.", t[corner_on_fire-1]);
 
-        printf("\nVetor de Tempo:\n");
-        for(int i = 0; i < biggest_corner; i++) printf("t[%d] = [%d]\n", i, t[i]);
-
-        printf("\nVetor de Rota:\n");
-        for(int i = 0; i < biggest_corner; i++) printf("r[%d] = [%d]\n", i, r[i]);
 
     }
 
