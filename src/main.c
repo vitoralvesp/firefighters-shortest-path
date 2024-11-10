@@ -19,10 +19,10 @@
 //          -> Semana 14/10 - 18/10 -> Algoritmos Gulosos
 //----------------------
 
-/* strlen_no_spaces: versao adaptada do strlen que nao conta os espacos
+/* count_values: versao adaptada do strlen que conta apenas valores numericos
     'str': string a ser lida
 */
-int strlen_no_spaces(char str[]){
+int count_values(char str[]){
     int count = 0;
     for(int str_idx = 0; str[str_idx] != '\0'; str_idx++){
         if(isalnum(str[str_idx]) && !isalpha(str[str_idx])) count++;
@@ -48,7 +48,7 @@ int build_matrix_line(int mtrx[MAX_LINES_INPUT][3], char buffer[MAX_LINES_INPUT]
             col++;
         }
     }
-    if(strlen_no_spaces(buffer) != 3) {
+    if(count_values(buffer) != 3) {
         return -1;
     }
     return 0; 
@@ -168,9 +168,9 @@ int main() {
     //file_line = 1 -> Numero de Esquinas
     //file_line > 1 -> Passa a ler a matriz de rotas
     while (fgets(buffer, MAX_LINE_CHARS_COUNT, file_ptr)) {
-        if(file_line > 1 && strlen_no_spaces(buffer)==1 && buffer[0] == '0') break;
+        if(file_line > 1 && count_values(buffer)==1 && buffer[0] == '0') break;
         if(file_line == 0) {
-            if(strlen_no_spaces(buffer) != 1){
+            if(count_values(buffer) != 1){
                 printf("ERRO! Entrada insuficiente ou excessiva na linha 1\n");
                 return EXIT_FAILURE;
             }
@@ -182,7 +182,7 @@ int main() {
             file_line++;
         }
         else if(file_line == 1) {
-            if(strlen_no_spaces(buffer) != 1){
+            if(count_values(buffer) != 1){
                 printf("ERRO! Entrada insuficiente ou excessiva na linha 2\n");
                 return EXIT_FAILURE;
             }
