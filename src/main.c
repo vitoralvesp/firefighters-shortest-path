@@ -87,18 +87,6 @@ int get_min_idx (int v[], int used[], int size){
     return min;
 }
 
-/* check: verifica se uma esquina ja foi inserida no vetor de caminho das esquinas ate a esquina de destino (int)
-   'check_number': elemento que sera procurado no vetor
-   'path': vetor de inteiros que representa as esquinas percorridas
-   'path_size': tamanho do vetor da rota
-   'return 1': elemento encontrado
-   'return 0': elemento nao encontrado */
-int check(int check_number, int path[], int path_size) {
-    for (int i = 0; i < path_size; i++)
-        if (path[i] == check_number) return 1; 
-    return 0; 
-}
-
 /* generate_roadtrip(ROTA-MAIS-RAPIDA): analisa as possibilidades armazenadas na tabela em relação aos custos dos percursos
    das esquinas e retorna o percurso e tempo otimos para uma esquina de destino x (void)
    'optimal_time': vetor de tempos que conterá o tempo otimo para a esquina de destino
