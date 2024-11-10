@@ -41,16 +41,14 @@ int strlen_no_spaces(char str[]){
 */
 int build_matrix_line(int mtrx[MAX_LINES_INPUT][3], char buffer[MAX_LINES_INPUT], int line) {
     int col = 0;
-    int read_values = 0;
     for (int i = 0; buffer[i] != '\0'; i++) {
         if (buffer[i] >= 48 && buffer[i] <= 57) {
             mtrx[line][col] = buffer[i] - '0';
-            read_values++;
             if(mtrx[line][col] == 0) return 1; 
             col++;
         }
     }
-    if(read_values != 3) {
+    if(strlen_no_spaces(buffer) != 3) {
         return -1;
     }
     return 0; 
