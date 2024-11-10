@@ -19,7 +19,7 @@
 //          -> Semana 14/10 - 18/10 -> Algoritmos Gulosos
 //----------------------
 
-/* count_values: versao adaptada do strlen que conta apenas valores numericos
+/* count_values: versao adaptada do strlen que conta apenas caracteres que representem valores numericos
     'str': string a ser lida
 */
 int count_values(char str[]){
@@ -30,7 +30,7 @@ int count_values(char str[]){
     return count;
 }
 
-/* build_matrix_line: recebe uma buffer com elementos numericos do tipo char e os converte para 
+/* build_routes_matrix_line: recebe uma buffer com elementos numericos do tipo char e os converte para 
    inteiros em uma matriz utilizada para armazenar as esquinas e custos (int)
    'mtrx': matriz do tipo int de tamanho 100 x 3
    'buffer': vetor de elementos numericos do tipo char com parte do conteudo lido de um arquivo
@@ -39,7 +39,7 @@ int count_values(char str[]){
    'return 0': retorno valido
    'return -1': Quantia incorreta de valores de entrada (retorno invalido)
 */
-int build_matrix_line(int mtrx[MAX_LINES_INPUT][3], char buffer[MAX_LINES_INPUT], int line) {
+int build_routes_matrix_line(int mtrx[MAX_LINES_INPUT][3], char buffer[MAX_LINES_INPUT], int line) {
     int col = 0;
     for (int i = 0; buffer[i] != '\0'; i++) {
         if (buffer[i] >= 48 && buffer[i] <= 57) {
@@ -54,14 +54,14 @@ int build_matrix_line(int mtrx[MAX_LINES_INPUT][3], char buffer[MAX_LINES_INPUT]
     return 0; 
 }
 
-/* build_table: monta uma tabela apenas com os custos do percurso de uma esquina i ate uma esquina j (int)
+/* build_routes_table: monta uma tabela apenas com os custos do percurso de uma esquina i ate uma esquina j (int)
    'mtrx':  matriz do tipo int de tamanho 100 x 3
    'table': tabela do tipo int que será montada com os custos do percurso das esquinas em mtrx
    'n_rows': total de linhas da matriz
    'return 1': mao dupla encontrada (retorno invalido)
    'return 0': retorno valido
 */
-int build_table(int mtrx[MAX_LINES_INPUT][3], int table[MAX_CORNERS][MAX_CORNERS], int n_rows){
+int build_routes_table(int mtrx[MAX_LINES_INPUT][3], int table[MAX_CORNERS][MAX_CORNERS], int n_rows){
     for(int row = 0; row < n_rows; row++){
         table[mtrx[row][0]-1][mtrx[row][1]-1] = mtrx[row][2]; 
         if(table[mtrx[row][1]-1][mtrx[row][0]-1] != 0) return 1; 
@@ -131,6 +131,7 @@ void generate_roadtrip(int optimal_time[], int optimal_path[], int corner_on_fir
 
     optimal_path[path_idx++] = corner_on_fire;
     while(path_idx < biggest_corner){
+        printf("Esquina %d -> predecessor otimo: %d\n",optimal_path[path_idx-1],predecessor_corner[optimal_path[path_idx-1]-1]);
         optimal_path[path_idx] = predecessor_corner[optimal_path[path_idx-1]-1];
         if(optimal_path[path_idx] == 1) break;
         path_idx++;
@@ -159,6 +160,7 @@ int main() {
     int corner_on_fire = 1;
     int file_line = 0;
 
+    //Inicializamos a matriz de rotas com 0s
     for (int i = 0; i < MAX_LINES_INPUT; i++) {
         for (int j = 0; j < 3; j++)
             mtrx[i][j] = 0;
@@ -168,7 +170,7 @@ int main() {
     //file_line = 1 -> Numero de Esquinas
     //file_line > 1 -> Passa a ler a matriz de rotas
     while (fgets(buffer, MAX_LINE_CHARS_COUNT, file_ptr)) {
-        if(file_line > 1 && count_values(buffer)==1 && buffer[0] == '0') break;
+        if(file_line > 1 && count_values(buffer)==1 && buffer[0] == '0') break; //Fim da leitura
         if(file_line == 0) {
             if(count_values(buffer) != 1){
                 printf("ERRO! Entrada insuficiente ou excessiva na linha 1\n");
@@ -194,7 +196,7 @@ int main() {
             file_line++;
         }
         else {
-            int check_buffer = build_matrix_line(mtrx, buffer, file_line-2);
+            int check_buffer = build_routes_matrix_line(mtrx, buffer, file_line-2);
             if(check_buffer == 1) {
                 printf("ERRO! Esquinas e custos devem ser maiores que 0!\n");
                 return EXIT_FAILURE;
@@ -227,7 +229,7 @@ int main() {
     for (int i = 0; i < biggest_corner; i++)
         optimal_path[i] = 0;
 
-    int check_table = build_table(mtrx,table,file_line);
+    int check_table = build_routes_table(mtrx,table,file_line);
     if(check_table){
         printf("ERRO! Nao podem existir vias de mao dupla!\n");
         return EXIT_FAILURE;
@@ -239,8 +241,8 @@ int main() {
         printf("\n");
     }
 
-    int *used = calloc(biggest_corner, sizeof(int)); // Inicializa com zeros
-    generate_roadtrip(optimal_time,optimal_path,corner_on_fire,biggest_corner,used,table);
+    int *used = calloc(biggest_corner, sizeof(int)); // Inicializa com zeros o vetor de usados
+    generate_roadtrip(optimal_time,optimal_path,corner_on_fire,biggest_corner,used,table); //Gerando os vetores da solucao
     printf("\nRota ate a esquina #%d: ", corner_on_fire);
 
     //Como a rota eh armazenada invertida, precisa procurar o inicio e exibir na ordem correta
