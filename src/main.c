@@ -17,6 +17,8 @@
 //Referencias: 
 //          -> Semana 09/10 - 11/10 -> Algoritmos Gulosos
 //          -> Semana 14/10 - 18/10 -> Algoritmos Gulosos
+//
+//Video: https://www.youtube.com/watch?v=Zkh6ph76gfI
 //----------------------
 
 /* count_values: versao adaptada do strlen que conta apenas caracteres que representem valores numericos
@@ -30,14 +32,16 @@ int count_values(char str[]){
     return count;
 }
 
-/* build_routes_matrix_line: recebe uma buffer com elementos numericos do tipo char e os converte para 
+/* @brief build_routes_matrix_line: recebe uma buffer com elementos numericos do tipo char e os converte para 
    inteiros em uma matriz utilizada para armazenar as esquinas e custos (int)
-   'mtrx': matriz do tipo int de tamanho 100 x 3
-   'buffer': vetor de elementos numericos do tipo char com parte do conteudo lido de um arquivo
-   'line': identificador da linha que o conteudo do buffer será alocado na matriz  
-   'return 1': valor nulo ou negativo encontrado (retorno invalido)
-   'return 0': retorno valido
-   'return -1': Quantia incorreta de valores de entrada (retorno invalido)
+
+   @param 'mtrx': matriz do tipo int de tamanho 100 x 3
+   @param 'buffer': vetor de elementos numericos do tipo char com parte do conteudo lido de um arquivo
+   @param 'line': identificador da linha que o conteudo do buffer será alocado na matriz  
+
+   @return 'return 1': valor nulo ou negativo encontrado (retorno invalido)
+   @return 'return 0': retorno valido
+   @return 'return -1': Quantia incorreta de valores de entrada (retorno invalido)
 */
 int build_routes_matrix_line(int mtrx[MAX_LINES_INPUT][3], char buffer[MAX_LINES_INPUT], int line) {
     int col = 0;
@@ -54,12 +58,12 @@ int build_routes_matrix_line(int mtrx[MAX_LINES_INPUT][3], char buffer[MAX_LINES
     return 0; 
 }
 
-/* build_routes_table: monta uma tabela apenas com os custos do percurso de uma esquina i ate uma esquina j (int)
-   'mtrx':  matriz do tipo int de tamanho 100 x 3
-   'table': tabela do tipo int que será montada com os custos do percurso das esquinas em mtrx
-   'n_rows': total de linhas da matriz
-   'return 1': mao dupla encontrada (retorno invalido)
-   'return 0': retorno valido
+/* @brief build_routes_table: monta uma tabela apenas com os custos do percurso de uma esquina i ate uma esquina j (int)
+   @param 'mtrx':  matriz do tipo int de tamanho 100 x 3
+   @param 'table': tabela do tipo int que será montada com os custos do percurso das esquinas em mtrx
+   @param 'n_rows': total de linhas da matriz
+   @return 'return 1': mao dupla encontrada (retorno invalido)
+   @return 'return 0': retorno valido
 */
 int build_routes_table(int mtrx[MAX_LINES_INPUT][3], int table[MAX_CORNERS][MAX_CORNERS], int n_rows){
     for(int row = 0; row < n_rows; row++){
@@ -70,11 +74,11 @@ int build_routes_table(int mtrx[MAX_LINES_INPUT][3], int table[MAX_CORNERS][MAX_
         
 }
 
-/* get_min_idx: retorna o indice do menor elemento de um vetor de inteiros (int)
-   'v': vetor de inteiros que sera analisado
-   'used': vetor que identifica os elementos que estao sendo utilizados no vetor
-   'size': tamanho do vetor 
-   'min': indice do menor elemento no vetor */
+/* @briefget_min_idx: retorna o indice do menor elemento de um vetor de inteiros (int)
+   @param'v': vetor de inteiros que sera analisado
+   @param'used': vetor que identifica os elementos que estao sendo utilizados no vetor
+   @param'size': tamanho do vetor 
+   @return 'min': indice do menor elemento no vetor */
 int get_min_idx (int v[], int used[], int size){
     int min = 1;
     for (int i = 2; i < size; i++) {
@@ -85,12 +89,12 @@ int get_min_idx (int v[], int used[], int size){
     return min;
 }
 
-/* generate_roadtrip(ROTA-MAIS-RAPIDA): analisa as possibilidades armazenadas na tabela em relação aos custos dos percursos
+/* @brief generate_roadtrip(ROTA-MAIS-RAPIDA): analisa as possibilidades armazenadas na tabela em relação aos custos dos percursos
    das esquinas e retorna o percurso e tempo otimos para uma esquina de destino x (void)
-   'optimal_time': vetor de tempos que conterá o tempo otimo para a esquina de destino
-   'optimal_path': vetor de caminhos que conterá a trajetoria otima de todas as esquinas até a esquina de destino
-   'corner_on_fire': esquina de destino
-   'biggest_corner': maior numero identificador de esquina (esquinas vao de 1 a biggest_corner)
+   @param 'optimal_time': vetor de tempos que conterá o tempo otimo para a esquina de destino
+   @param 'optimal_path': vetor de caminhos que conterá a trajetoria otima de todas as esquinas até a esquina de destino
+   @param 'corner_on_fire': esquina de destino
+   @param 'biggest_corner': maior numero identificador de esquina (esquinas vao de 1 a biggest_corner)
  */
 void generate_roadtrip(int optimal_time[], int optimal_path[], int corner_on_fire, int biggest_corner, int used[],int table[MAX_CORNERS][MAX_CORNERS]){
     int count_used = 1,corner = 1, originCost, destCost, routeCost, origin = corner_on_fire, path_idx = 0;
@@ -129,9 +133,11 @@ void generate_roadtrip(int optimal_time[], int optimal_path[], int corner_on_fir
         used[corner-1] = 1;
     }
 
-    optimal_path[path_idx++] = corner_on_fire;
+    optimal_path[path_idx++] = corner_on_fire; //Armazenando inicialmente a esquina do incendio
+
+    //Monta a rota invertida, indo do destino à origem (esquina 1)
     while(path_idx < biggest_corner){
-        printf("Esquina %d -> predecessor otimo: %d\n",optimal_path[path_idx-1],predecessor_corner[optimal_path[path_idx-1]-1]);
+        printf("\nEsquina %d -> predecessor otimo: %d\n",optimal_path[path_idx-1],predecessor_corner[optimal_path[path_idx-1]-1]);
         optimal_path[path_idx] = predecessor_corner[optimal_path[path_idx-1]-1];
         if(optimal_path[path_idx] == 1) break;
         path_idx++;
@@ -226,9 +232,11 @@ int main() {
         }
     }
 
+    //Incializando as esquinas da rota com 0s
     for (int i = 0; i < biggest_corner; i++)
         optimal_path[i] = 0;
 
+    //Validando tabela
     int check_table = build_routes_table(mtrx,table,file_line);
     if(check_table){
         printf("ERRO! Nao podem existir vias de mao dupla!\n");
