@@ -17,8 +17,6 @@
 //Referencias: 
 //          -> Semana 09/10 - 11/10 -> Algoritmos Gulosos
 //          -> Semana 14/10 - 18/10 -> Algoritmos Gulosos
-//
-//Video: https://www.youtube.com/watch?v=Zkh6ph76gfI
 //----------------------
 
 /* count_values: versao adaptada do strlen que conta apenas caracteres que representem valores numericos
